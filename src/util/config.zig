@@ -1,10 +1,10 @@
 const std = @import("std");
-const lib = @import("../root.zig");
+const net = @import("net.zig");
 
 pub const Properties = struct {
     host: []const u8,
     port: u16,
-    protocol: lib.ConnectionProtocol,
+    protocol: net.ConnectionProtocol,
 
     pub fn default() Properties {
         return Properties{
