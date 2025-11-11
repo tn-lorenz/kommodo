@@ -16,6 +16,11 @@ pub const ConnectionProtocol = enum {
     }
 };
 
+// TODO: actually establish connection
 pub fn openConnection(cp: ConnectionProtocol, addr: std.net.Address, port: u16) !void {
-    std.debug.print("Opening connection via {s} on {any}:{d}\n", .{ cp.toString(), addr, port });
+    // const stdout = std.fs.File.stdout();
+    // try stdout.print("Opening connection via {s} on {s}:{d}\n", .{ @tagName(cp), addr, port });
+    _ = cp;
+    _ = addr;
+    _ = port;
 }

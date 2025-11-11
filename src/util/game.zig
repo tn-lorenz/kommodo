@@ -17,17 +17,17 @@ const ThreadCtx = struct {
 fn thread_function(arg: ?*anyopaque) void {
     if (arg == null) return;
 
-    const ctx: *ThreadCtx = @ptrCast(@alignCast(arg));
+    const opaque_ptr = arg.?;
+    const ctx: *ThreadCtx = @ptrCast(@alignCast(opaque_ptr));
 
     const running = ctx.running;
 
     const interval: i128 = 1_000_000_000 / 20;
     var last = std.time.nanoTimestamp();
     var delta: i128 = 0;
-    var current: i128 = 0;
 
-    while (running.*.load(AtomicOrder.seq_cst)) {
-        current = std.time.nanoTimestamp();
+    while (running.load(AtomicOrder.seq_cst)) {
+        const current = std.time.nanoTimestamp();
         delta += @divTrunc(current - last, interval);
         last = current;
 
@@ -38,17 +38,21 @@ fn thread_function(arg: ?*anyopaque) void {
             delta -= 1;
         }
     }
+
+    std.heap.page_allocator.destroy(ctx);
 }
 
 pub fn startGameLoop(running: *std.atomic.Value(bool), update_fn: fn () void) !void {
-    running.*.store(true, AtomicOrder.seq_cst);
+    running.store(true, AtomicOrder.seq_cst);
 
-    var ctx = ThreadCtx{
+    const allocator = std.heap.page_allocator;
+    const ctx = try allocator.create(ThreadCtx);
+    ctx.* = ThreadCtx{
         .running = running,
         .update_fn = &update_fn,
     };
 
-    _ = try std.Thread.spawn(.{}, thread_function, .{&ctx});
+    _ = try std.Thread.spawn(.{}, thread_function, .{ctx});
 }
 
 pub fn initLog(prefix: []const u8) !void {
@@ -70,7 +74,6 @@ pub fn initInput() !void {
     // const allocator = std.heap.page_allocator;
 
     // while (true) {
-    //     // Liest eine Zeile bis '\n' und gibt sie als []u8 zurück
     //     const line = try std.io.readUntilDelimiterOrEofAlloc(allocator, &stdin, '\n');
     //     defer allocator.free(line);
 

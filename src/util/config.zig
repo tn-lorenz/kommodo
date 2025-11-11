@@ -23,22 +23,28 @@ pub const Properties = struct {
         var json_reader = std.json.Reader.init(allocator, &file_reader.interface);
         defer json_reader.deinit();
 
-        const props = try std.json.parseFromTokenSource(Properties, allocator, &json_reader, .{});
-        defer props.deinit();
+        const parsed = try std.json.parseFromTokenSource(Properties, allocator, &json_reader, .{});
+        defer parsed.deinit();
 
-        return props.value;
+        const host_copy = try allocator.dupe(u8, parsed.value.host);
+
+        return Properties{
+            .host = host_copy,
+            .port = parsed.value.port,
+            .protocol = parsed.value.protocol,
+        };
     }
 
-    pub fn save(path: []const u8, allocator: std.mem.Allocator, props: Properties) !void {
+    pub fn save(path: []const u8, alloc: std.mem.Allocator, props: Properties) !void {
         const file = try std.fs.cwd().createFile(path, .{});
         defer file.close();
 
         const json_text = try std.fmt.allocPrint(
-            allocator,
+            alloc,
             "{{\n\t\"host\": \"{s}\",\n\t\"port\": {d},\n\t\"protocol\": \"{s}\"\n}}",
             .{ props.host, props.port, props.protocol.toString() },
         );
-        defer allocator.free(json_text);
+        defer alloc.free(json_text);
 
         try file.writeAll(json_text);
     }
