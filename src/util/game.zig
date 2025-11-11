@@ -4,8 +4,11 @@ const net = @import("net.zig");
 const AtomicOrder = std.builtin.AtomicOrder;
 
 pub fn startServer(props: config.Properties, addr: std.net.Address, running: *std.atomic.Value(bool), update_fn: fn () void) !void {
-    try initLog("[log]:");
-    try startGameLoop(running, update_fn);
+    try initLog("[kommodo]:");
+
+    const game_thread = try startGameLoop(running, update_fn);
+    defer game_thread.join();
+
     try net.openConnection(props.protocol, addr, props.port);
 }
 
@@ -42,7 +45,7 @@ fn thread_function(arg: ?*anyopaque) void {
     std.heap.page_allocator.destroy(ctx);
 }
 
-pub fn startGameLoop(running: *std.atomic.Value(bool), update_fn: fn () void) !void {
+pub fn startGameLoop(running: *std.atomic.Value(bool), update_fn: fn () void) !std.Thread {
     running.store(true, AtomicOrder.seq_cst);
 
     const allocator = std.heap.page_allocator;
@@ -52,7 +55,7 @@ pub fn startGameLoop(running: *std.atomic.Value(bool), update_fn: fn () void) !v
         .update_fn = &update_fn,
     };
 
-    _ = try std.Thread.spawn(.{}, thread_function, .{ctx});
+    return try std.Thread.spawn(.{}, thread_function, .{ctx});
 }
 
 pub fn initLog(prefix: []const u8) !void {
@@ -60,7 +63,7 @@ pub fn initLog(prefix: []const u8) !void {
     var stdout_writer: std.fs.File.Writer = std.fs.File.stdout().writer(&stdout_buffer);
     const stdout: *std.Io.Writer = &stdout_writer.interface;
 
-    try stdout.print("{s} Initialised log.", .{prefix});
+    try stdout.print("{s} Initialised log.\n", .{prefix});
 
     // Always at the end
     try stdout.flush();

@@ -6,7 +6,6 @@ var running: std.atomic.Value(bool) = .init(false);
 
 pub fn main() !void {
     var gpa = std.heap.DebugAllocator(.{}){};
-
     const alloc = gpa.allocator();
     const props = try kom.findOrCreateProperties(alloc);
     const addr = try std.net.Address.parseIp4(props.host, 0);
