@@ -18,5 +18,6 @@ pub fn main() !void {
 }
 
 pub fn update() void {
-    // ...
+    const stdout = std.fs.File.stdout();
+    _ = stdout.writeAll("Hello, World!\n") catch {};
 }
