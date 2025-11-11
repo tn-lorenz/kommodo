@@ -1,0 +1,33 @@
+# Zig build artifacts
+.zig-cache/
+zig-out/
+/release/
+/debug/
+/build/
+/build-*/
+/docgen_tmp/
+
+# Build output from IDEs or editors
+*.exe
+*.o
+*.obj
+*.a
+*.so
+*.dll
+*.dylib
+
+# Temporary files
+*.log
+*.tmp
+*.swp
+*.swo
+
+# VSCode
+.vscode/
+
+# macOS / Windows junk
+.DS_Store
+Thumbs.db
+
+# ignore editor-specific zig cache (VSCode plugin cache)
+.zls-cache/
