@@ -74,6 +74,11 @@ origin   https://github.com/{your-name}/kommodo.git (push)
 upstream https://github.com/tn-lorenz/kommodo.git (fetch)
 upstream https://github.com/tn-lorenz/kommodo.git (push)
 ```
+Now set-up a new feature branch by running
+```bash
+git checkout -b feat-{feature-name}
+```
+from the `main` branch.
 
 ## Examine
 ...the vanilla Minecraft implementation. Translate it to idiomatic, ECS-compatible `zig 0.15.2` code, as cleanly and efficiently as possible.
