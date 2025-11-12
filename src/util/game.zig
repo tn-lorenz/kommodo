@@ -3,10 +3,10 @@ const config = @import("config.zig");
 const net = @import("net.zig");
 const AtomicOrder = std.builtin.AtomicOrder;
 
-pub fn startServer(props: config.Properties, addr: std.net.Address, running: *std.atomic.Value(bool), update_fn: fn () void) !void {
+pub fn startServer(allocator: std.mem.Allocator, props: config.Properties, addr: std.net.Address, running: *std.atomic.Value(bool), update_fn: fn () void) !void {
     try initLog("[kommodo]:");
 
-    const game_thread = try startGameLoop(running, update_fn);
+    const game_thread = try startGameLoop(allocator, running, update_fn);
     defer game_thread.join();
 
     try net.openConnection(props.protocol, addr, props.port);
@@ -15,13 +15,13 @@ pub fn startServer(props: config.Properties, addr: std.net.Address, running: *st
 const ThreadCtx = struct {
     running: *std.atomic.Value(bool),
     update_fn: ?*const fn () void,
+    allocator: std.mem.Allocator,
 };
 
 fn thread_function(arg: ?*anyopaque) void {
     if (arg == null) return;
 
-    const opaque_ptr = arg.?;
-    const ctx: *ThreadCtx = @ptrCast(@alignCast(opaque_ptr));
+    const ctx: *ThreadCtx = @ptrCast(@alignCast(arg.?));
 
     const running = ctx.running;
 
@@ -42,17 +42,17 @@ fn thread_function(arg: ?*anyopaque) void {
         }
     }
 
-    std.heap.page_allocator.destroy(ctx);
+    ctx.allocator.destroy(ctx);
 }
 
-pub fn startGameLoop(running: *std.atomic.Value(bool), update_fn: fn () void) !std.Thread {
+pub fn startGameLoop(allocator: std.mem.Allocator, running: *std.atomic.Value(bool), update_fn: fn () void) !std.Thread {
     running.store(true, AtomicOrder.seq_cst);
 
-    const allocator = std.heap.page_allocator;
     const ctx = try allocator.create(ThreadCtx);
     ctx.* = ThreadCtx{
         .running = running,
         .update_fn = &update_fn,
+        .allocator = allocator,
     };
 
     return try std.Thread.spawn(.{}, thread_function, .{ctx});
@@ -65,26 +65,25 @@ pub fn initLog(prefix: []const u8) !void {
 
     try stdout.print("{s} Initialised log.\n", .{prefix});
 
-    // Always at the end
     try stdout.flush();
 }
 
 // TODO: Cmd starten und alles anzeigen
-pub fn initInput() !void {
+pub fn initInput(allocator: std.mem.Allocator) !void {
+    _ = allocator;
     // const stdin = std.fs.getStdIn().reader();
     // var read_buffer: [256]u8 = undefined;
     // var stdin_reader = stdin.reader(&read_buffer);
-    // const allocator = std.heap.page_allocator;
 
     // while (true) {
     //     const line = try std.io.readUntilDelimiterOrEofAlloc(allocator, &stdin, '\n');
     //     defer allocator.free(line);
-
+    //
     //     if (line.len == 0) continue;
-
+    //
     //     var args = std.mem.split(line, " ");
     //     std.debug.print("Command: {s}\n", .{line});
-
+    //
     //     if (args.next()) |first| {
     //         std.debug.print("Command word: {s}\n", .{first});
     //     }
