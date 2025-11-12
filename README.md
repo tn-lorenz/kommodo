@@ -59,8 +59,12 @@ in the GitCraft directory and keep in mind that you *may* have to implement this
 ...the vanilla Minecraft implementation. Translate it to idiomatic, ECS-compatible `zig 0.15.2` code, as cleanly and efficiently as possible.
 
 ## Commit
-...your changes to your fork and open a pull-request.
-
+...your changes to your fork and open a pull-request by using the following commands in the directory of your fork that has previously been setup as a git directory with upstream `https://github.com/tn-lorenz/kommodo`.
+```bash
+git add .
+git commit -m "{your-message}"
+git push origin {your-branch}
+```
 ---
 
 ## Design decisions
