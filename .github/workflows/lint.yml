@@ -22,3 +22,6 @@ jobs:
 
       - name: Spell check (typos)
         uses: crate-ci/typos@v1.39.0
+        with:
+          args: "--exclude zig-out"
+
