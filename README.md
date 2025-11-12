@@ -1,4 +1,5 @@
 [![Zig](https://img.shields.io/badge/Zig-F7A41D?logo=zig&logoColor=fff)](#)
+[![License](https://img.shields.io/github/license/tn-lorenz/kommodo?style=social)](https://github.com/tn-lorenz/kommodo/blob/main/LICENSE) 
 [![Docs](https://img.shields.io/badge/docs-GitHub_Pages-blue)](https://tn-lorenz.github.io/kommodo/)
 ![Tests](https://github.com/4lve/SteelMC/actions/workflows/test.yml/badge.svg) 
 ![Lint](https://github.com/4lve/SteelMC/actions/workflows/lint.yml/badge.svg)
