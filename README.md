@@ -56,26 +56,24 @@ in the GitCraft directory and keep in mind that you *may* have to implement this
 
 ## Fork
 ...the `main` branch of this repository, so you can prepare your changes on there. Clone it to your system by running the command
-```bash
+```gitattributes
 git clone https://github.com/{your-name}/kommodo
 ```
 in your directory of choice. And don't forget to set this repository as it's upstream by running the following command
-```bash
+```gitattributes
 git remote add upstream https://github.com/tn-lorenz/kommodo.git
 ```
-in said directory. To test if it has succeeded, type
-```bash
-git remote -v
-```
-which should result in the following output:
-```bash
+in said directory. To test if it has succeeded, type and observer the following:
+```console
+$ git remote -v
+
 origin   https://github.com/{your-name}/kommodo.git (fetch)
 origin   https://github.com/{your-name}/kommodo.git (push)
 upstream https://github.com/tn-lorenz/kommodo.git (fetch)
 upstream https://github.com/tn-lorenz/kommodo.git (push)
 ```
 Now set-up a new feature branch by running
-```bash
+```gitattributes
 git checkout -b feat-{feature-name}
 ```
 from the `main` branch.
@@ -86,7 +84,7 @@ When in doubt, consider if your code adheres to the [core-principles](#design-de
 
 ## Commit
 ...your changes to your fork and open a pull-request by using the following commands in the directory of your fork.
-```bash
+```gitattributes
 git add .
 git commit -m "{your-message}"
 git push origin {your-branch}
