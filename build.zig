@@ -24,7 +24,7 @@ pub fn build(b: *std.Build) void {
 
     b.installArtifact(exe);
 
-    const docs = b.installDirectory(.{
+    const docs = b.addInstallDirectory(.{
         .source_dir = exe.getEmittedDocs(),
         .install_dir = .prefix,
         .install_subdir = "doc",
