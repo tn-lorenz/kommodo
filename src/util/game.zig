@@ -18,11 +18,20 @@ const ThreadCtx = struct {
     allocator: std.mem.Allocator,
 };
 
-fn thread_function(arg: ?*anyopaque) void {
-    if (arg == null) return;
+pub fn startGameLoop(allocator: std.mem.Allocator, running: *std.atomic.Value(bool), update_fn: fn () void) !std.Thread {
+    running.store(true, AtomicOrder.seq_cst);
 
-    const ctx: *ThreadCtx = @ptrCast(@alignCast(arg.?));
+    const ctx = try allocator.create(ThreadCtx);
+    ctx.* = ThreadCtx{
+        .running = running,
+        .update_fn = &update_fn,
+        .allocator = allocator,
+    };
 
+    return try std.Thread.spawn(.{}, thread_function, .{ctx});
+}
+
+fn thread_function(ctx: *ThreadCtx) void {
     const running = ctx.running;
 
     const interval: i128 = 1_000_000_000 / 20;
@@ -35,27 +44,12 @@ fn thread_function(arg: ?*anyopaque) void {
         last = current;
 
         if (delta >= 1) {
-            if (ctx.update_fn) |f| {
-                f();
-            }
+            if (ctx.update_fn) |f| f();
             delta -= 1;
         }
     }
 
     ctx.allocator.destroy(ctx);
-}
-
-pub fn startGameLoop(allocator: std.mem.Allocator, running: *std.atomic.Value(bool), update_fn: fn () void) !std.Thread {
-    running.store(true, AtomicOrder.seq_cst);
-
-    const ctx = try allocator.create(ThreadCtx);
-    ctx.* = ThreadCtx{
-        .running = running,
-        .update_fn = &update_fn,
-        .allocator = allocator,
-    };
-
-    return try std.Thread.spawn(.{}, thread_function, .{ctx});
 }
 
 pub fn initLog(prefix: []const u8) !void {

@@ -7,7 +7,6 @@ var running: std.atomic.Value(bool) = .init(false);
 pub fn main() !void {
     var gpa = std.heap.DebugAllocator(.{}){};
     defer _ = gpa.deinit();
-    // alternativ: defer std.debug.assert(gpa.deinit() == .ok);
 
     const alloc = gpa.allocator();
     const props = try kom.findOrCreateProperties(alloc);
