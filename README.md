@@ -39,7 +39,7 @@ Kommodo is an ECS-based Minecraft server, built in zig `0.15.2`.
 
 ## How to contribute
 > [!NOTE]
-> All the following steps require you to have a version of [git](https://git-scm.com/) running on your system.
+> All the following steps require you to have a version of [git](https://git-scm.com/) and [zig 0.15.2](https://www.zvm.app/) running on your system.
 
 ## Identify
 ...a feature you'd like to add or an issue to work on. You should always create an issue or a draft-pr describing what you want, before considering adding a major feature.
