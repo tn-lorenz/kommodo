@@ -112,10 +112,10 @@ async runtime, as provided by `libxev` would be trivial. Being a low-level langu
 ---
 
 ## Goals
-- ECS-based
-- highly optimised for multi-threading and customization
-- Easy-to-use library for complete customization
-- Utilising the full power of the `Io` interface and event-based runtimes
+- [ ] Provide a native, easy to use, flexible and powerful ECS library
+- [ ] Provide a fully-implemented example of a vanilla server with plugin support as a downloadable binary
+- [ ] highly optimise for data-oriented-design, multi-threading, parallelisation, SIMD and customization
+- [ ] Utilise the full power of the `Io` interface and event-based runtimes
 
 ---
 
