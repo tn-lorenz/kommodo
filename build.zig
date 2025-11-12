@@ -29,6 +29,7 @@ pub fn build(b: *std.Build) void {
         .install_dir = .prefix,
         .install_subdir = "doc",
     });
+    const docs_step = b.step("docs", "Generate API documentation");
     b.getInstallStep().dependOn(&docs.step);
 
     const run_step = b.step("run", "Run the app");
