@@ -1,3 +1,4 @@
+//! This utility combines all the methods necessary for networking interactions.
 const std = @import("std");
 
 pub const ConnectionProtocol = enum {
