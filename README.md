@@ -20,6 +20,12 @@ Kommodo is an ECS-based Minecraft server, built in zig `0.15.2`.
 
 ## 📖 Table of Contents
 
+- [How to contribute](#how-to-contribute)
+  - [Identify](#identify)
+  - [Decompile](#decompile)
+  - [Fork](#fork)
+  - [Examine](#examine)
+  - [Commit](#commit)
 - [Design decisions](#design-decisions)
   - [Why ECS?](#why-ecs)
   - [Why the lib?](#why-the-lib)
@@ -28,6 +34,33 @@ Kommodo is an ECS-based Minecraft server, built in zig `0.15.2`.
 - [License](#license)
 
 ---
+
+## How to contribute
+
+## Identify
+...a feature you'd like to add or an issue to work on. You should always create an issue or a draft-pr describing what you want, before considering adding a major feature.
+
+## Decompile
+...the latest version of Minecraft using Parchment mappings. The `main` branch currently targets Minecraft `1.21.10`.
+
+Alternatively, you may use [GitCraft](https://github.com/WinPlay02/GitCraft) for this task.
+If you choose to use GitCraft, run the command 
+```bash
+./gradlew run --args="--mappings=mojmap_parchment --only-stable"
+```
+in the GitCraft directory and keep in mind that you *may* have to implement this [change](https://github.com/WinPlay02/GitCraft/pull/29).
+
+## Fork
+...the `main` branch of this repository, so you can prepare your changes on there.
+
+## Examine
+...the vanilla Minecraft implementation. Translate it to idiomatic, ECS-compatible `zig 0.15.2` code, as cleanly and efficiently as possible.
+
+## Commit
+...your changes to your fork and open a pull-request.
+
+---
+
 ## Design decisions
 This section briefly explains the thought-process behind the key-principles of this project's design.
 
@@ -42,11 +75,15 @@ Kommodo aims for providing both a fully-working implementation of the current Mi
 As previously noted, `zig` provides great utility with it's compile-time capabilities. The new `std.Io` interface enables a high level of customization, for example switching to an event-based
 async runtime, as provided by `libxev` would be trivial. Being a low-level language, it's also more than suitable for thorough optimization.
 
+---
+
 ## Goals
 - ECS-based
 - highly optimised for multi-threading and customization
 - Easy-to-use library for complete customization
 - Utilising the full power of the `Io` interface and event-based runtimes
+
+---
 
 ## License
 This project and all of its content is licensed under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0.html).
