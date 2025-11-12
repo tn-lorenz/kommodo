@@ -13,12 +13,40 @@
      <img src="https://www.abc4.com/wp-content/uploads/sites/4/2023/06/Komodo_027.jpg" alt="Logo" width="66%">
    </p>
 
-Kommodo is an ECS-based Minecraft server, built in zig.
+Kommodo is an ECS-based Minecraft server, built in zig `0.15.2`.
 </div>
 
 ---
 
+## 📖 Table of Contents
+
+- [Design decisions](#design-decisions)
+  - [Why ECS?](#why-ecs)
+  - [Why the lib?](#why-the-lib)
+  - [Why zig?](#why-zig)
+- [Goals](#goals)
+- [License](#license)
+
+---
+## Design decisions
+This section briefly explains the thought-process behind the key-principles of this project's design.
+
+## Why ECS
+A Entity-Component-System (ECS)-based architecture allows for data-oriented-design, cache optimisation, easy parallelization and massive concurrency.
+It should also be easy and ergonomic to work with, thanks to `zig`'s [comptime](https://ziglang.org/documentation/0.15.2/#comptime) capabilities.
+
+## Why the lib
+Kommodo aims for providing both a fully-working implementation of the current Minecraft vanilla server, complete with plugin support and a library that allows for bespoke implementations, similar to [Minestom](https://github.com/Minestom/Minestom).
+
+## Why zig
+As previously noted, `zig` provides great utility with it's compile-time capabilities. The new `std.Io` interface enables a high level of customization, for example switching to an event-based
+async runtime, as provided by `libxev` would be trivial. Being a low-level language, it's also more than suitable for thorough optimization.
+
 ## Goals
 - ECS-based
+- highly optimised for multi-threading and customization
 - Easy-to-use library for complete customization
-- Utilising the full power of the IO interface and event-based runtimes
+- Utilising the full power of the `Io` interface and event-based runtimes
+
+## License
+This project and all of its content is licensed under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0.html).
