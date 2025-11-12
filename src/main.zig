@@ -41,3 +41,4 @@ pub fn update() void {
     _ = stdout.print("Hello, World!\n", .{}) catch {};
     _ = stdout.flush() catch {};
 }
+// Test
