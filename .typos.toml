@@ -1,1 +1,2 @@
-exclude = ["zig-out/doc"]
+[files]
+extend-exclude = ["zig-out"]
