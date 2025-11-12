@@ -38,6 +38,8 @@ Kommodo is an ECS-based Minecraft server, built in zig `0.15.2`.
 ---
 
 ## How to contribute
+> [!NOTE]
+> All the following steps require you to have a version of [git](https://git-scm.com/) running on your system.
 
 ## Identify
 ...a feature you'd like to add or an issue to work on. You should always create an issue or a draft-pr describing what you want, before considering adding a major feature.
@@ -57,20 +59,35 @@ in the GitCraft directory and keep in mind that you *may* have to implement this
 ```bash
 git clone https://github.com/{your-name}/kommodo
 ```
-in your directory of choice. NOTE: this means you will have to have installed [git](https://git-scm.com/) to your system in advance.
+in your directory of choice. And don't forget to set this repository as it's upstream by running the following command
+```bash
+git remote add upstream https://github.com/tn-lorenz/kommodo.git
+```
+in said directory. To test if it has succeeded, type
+```bash
+git remote -v
+```
+which should result in the following output:
+```bash
+origin   https://github.com/{your-name}/kommodo.git (fetch)
+origin   https://github.com/{your-name}/kommodo.git (push)
+upstream https://github.com/tn-lorenz/kommodo.git (fetch)
+upstream https://github.com/tn-lorenz/kommodo.git (push)
+```
 
 ## Examine
 ...the vanilla Minecraft implementation. Translate it to idiomatic, ECS-compatible `zig 0.15.2` code, as cleanly and efficiently as possible.
+When in doubt, consider if your code adheres to the [core-principles](#design-decisions) and [goals](#goals) of this project.
 
 ## Commit
-...your changes to your fork and open a pull-request by using the following commands in the directory of your fork that has previously been setup as a git directory with upstream `https://github.com/tn-lorenz/kommodo`.
+...your changes to your fork and open a pull-request by using the following commands in the directory of your fork.
 ```bash
 git add .
 git commit -m "{your-message}"
 git push origin {your-branch}
 ```
-NOTE: This project strictly enforces the use of the [conventional commits standard](https://www.conventionalcommits.org/en/v1.0.0/) in the commit messages.
-
+> [!NOTE]
+> This project strictly enforces the use of the [conventional commits standard](https://www.conventionalcommits.org/en/v1.0.0/) in the commit messages.
 ---
 
 ## Design decisions
