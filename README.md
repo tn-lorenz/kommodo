@@ -53,7 +53,11 @@ If you choose to use GitCraft, run the command
 in the GitCraft directory and keep in mind that you *may* have to implement this [change](https://github.com/WinPlay02/GitCraft/pull/29).
 
 ## Fork
-...the `main` branch of this repository, so you can prepare your changes on there.
+...the `main` branch of this repository, so you can prepare your changes on there. Clone it to your system by running the command
+```bash
+git clone https://github.com/{your-name}/kommodo
+```
+in your directory of choice. NOTE: this means you will have to have installed [git](https://git-scm.com/) to your system in advance.
 
 ## Examine
 ...the vanilla Minecraft implementation. Translate it to idiomatic, ECS-compatible `zig 0.15.2` code, as cleanly and efficiently as possible.
@@ -65,6 +69,8 @@ git add .
 git commit -m "{your-message}"
 git push origin {your-branch}
 ```
+NOTE: This project strictly enforces the use of the [conventional commits standard](https://www.conventionalcommits.org/en/v1.0.0/) in the commit messages.
+
 ---
 
 ## Design decisions
