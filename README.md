@@ -2,9 +2,9 @@
 [![Minecraft](https://img.shields.io/badge/Minecraft-1.21.10-green?style=social&logo=minecraft)](https://minecraft.wiki/w/Java_Edition_1.21.10)
 [![License](https://img.shields.io/github/license/tn-lorenz/kommodo?style=social)](https://github.com/tn-lorenz/kommodo/blob/main/LICENSE) 
 [![Docs](https://img.shields.io/badge/docs-GitHub_Pages-blue)](https://tn-lorenz.github.io/kommodo/)
-![Tests](https://github.com/4lve/SteelMC/actions/workflows/test.yml/badge.svg) 
-![Lint](https://github.com/4lve/SteelMC/actions/workflows/lint.yml/badge.svg)
-![Build](https://github.com/4lve/SteelMC/actions/workflows/release.yml/badge.svg)
+[![Tests](https://github.com/4lve/SteelMC/actions/workflows/test.yml/badge.svg)](#)
+[![Lint](https://github.com/4lve/SteelMC/actions/workflows/lint.yml/badge.svg)](#)
+[![Build](https://github.com/4lve/SteelMC/actions/workflows/release.yml/badge.svg)](#)
 
 
 <div align="center">
