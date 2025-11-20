@@ -65,7 +65,6 @@ fn tcpServerThread(ctx_ptr: *ThreadCtx) !void {
 
     std.debug.print("Server listening on ", .{});
     try printAddress(ctx.addr);
-    std.debug.print(":{d}\n", .{ctx.addr.getPort()});
 
     while (true) {
         var connection = server.accept() catch |err| {
@@ -100,5 +99,6 @@ fn printAddress(addr: std.net.Address) !void {
     var stdout_writer = std.fs.File.stdout().writer(&stdout_buffer);
     const stdout = &stdout_writer.interface;
 
-    try addr.format(stdout);
+    try stdout.print("{f}", .{addr});
+    try stdout.flush();
 }
