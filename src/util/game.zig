@@ -40,11 +40,14 @@ fn thread_function(ctx: *ThreadCtx) void {
     while (running.load(AtomicOrder.seq_cst)) {
         const now = std.time.nanoTimestamp();
 
-        const remaining = next - now;
+        var remaining = next - now;
 
-        if (remaining > 0) {
-            std.Thread.sleep(@intCast(remaining));
+        if (remaining < 0) {
+            remaining = 0;
         }
+
+        std.Thread.sleep(@intCast(remaining));
+
         next += interval;
 
         if (ctx.update_fn) |f| f();

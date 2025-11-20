@@ -63,8 +63,8 @@ fn tcpServerThread(ctx_ptr: *ThreadCtx) !void {
         server.deinit();
     }
 
-    std.debug.print("Server listening on ", .{});
-    try printAddress(ctx.addr);
+    std.debug.print("Server listening on {f}\n", .{ctx.addr});
+    // try printAddress(ctx.addr);
 
     while (true) {
         var connection = server.accept() catch |err| {
