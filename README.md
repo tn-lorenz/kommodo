@@ -29,6 +29,9 @@ Kommodo is an ECS-based Minecraft server, built in zig `0.15.2`.
   - [Fork](#fork)
   - [Examine](#examine)
   - [Commit](#commit)
+- [How to use](#how-to-use)
+  - [Clone](#clone)
+  - [Make a start-script](#make-a-start-script)
 - [Design decisions](#design-decisions)
   - [Why ECS?](#why-ecs)
   - [Why the lib?](#why-the-lib)
@@ -97,6 +100,43 @@ Then you may open a pull-request by comparing on the github website.
 > This project strictly enforces the use of the [conventional commits standard](https://www.conventionalcommits.org/en/v1.0.0/) in the commit messages.
 ---
 
+## How to use
+
+## Clone
+... this repository as described in the [contributing guide](#fork). Then run the following command in the downloaded directory:
+```bash
+zig build
+```
+This will compile the binary to `..\kommodo\zig-out\bin` from where it can be copied to any directory you like.
+
+## Make a start script
+in the same directory as the compiled binary and run it. The following are some examples for different operating systems.  
+
+Windows
+```bash
+@echo off
+echo Starting kommodo...
+
+set RUST_BACKTRACE=full
+kommodo.exe
+
+pause
+```
+
+Linux
+```bash
+#!/bin/bash
+# start.sh
+# Simple startup script for kommodo on Linux
+
+echo "Starting kommodo..."
+
+export RUST_BACKTRACE=full
+./kommodo
+
+read
+```
+---
 ## Design decisions
 This section briefly explains the thought-process behind the key-principles of this project's design.
 
