@@ -21,7 +21,7 @@ pub fn main() !void {
 
     const alloc = gpa.allocator();
     const props = try kom.findOrCreateProperties(alloc);
-    const addr = try std.net.Address.parseIp4(props.host, 0);
+    const addr = try std.net.Address.parseIp4(props.host, props.port);
 
     try game.startServer(alloc, props, addr, &running, update);
 }
@@ -38,6 +38,6 @@ pub fn update() void {
     var stdout_writer = std.fs.File.stdout().writer(&stdout_buffer);
     const stdout = &stdout_writer.interface;
 
-    _ = stdout.print("Hello, World!\n", .{}) catch {};
+    stdout.print("Hello, World!\n", .{}) catch {};
     _ = stdout.flush() catch {};
 }

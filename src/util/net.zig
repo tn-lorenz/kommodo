@@ -44,7 +44,7 @@ pub fn startTcpServer(
     _ = try std.Thread.spawn(.{}, tcpServerThread, .{ctx_ptr});
 }
 
-fn tcpServerThread(ctx_ptr: *ThreadCtx) void {
+fn tcpServerThread(ctx_ptr: *ThreadCtx) !void {
     const ctx = ctx_ptr.*;
     defer ctx.allocator.destroy(ctx_ptr);
 
@@ -59,19 +59,49 @@ fn tcpServerThread(ctx_ptr: *ThreadCtx) void {
         return;
     };
     defer {
-        server.close();
+        // server.close(); vllt Connection -> stream schließen?
         server.deinit();
     }
 
-    std.debug.print("TCP server listening on port {d}\n", .{ctx.addr.getPort()});
+    std.debug.print("Server listening on ", .{});
+    try printAddress(ctx.addr);
+    std.debug.print(":{d}\n", .{ctx.addr.getPort()});
 
     while (true) {
-        _ = server.accept() catch |err| {
+        var connection = server.accept() catch |err| {
             std.debug.print("Accept error: {}\n", .{err});
             continue;
         };
-        //_ = std.Thread.spawn(.{}, handleClient, .{&conn}) catch |err| {
-        //    std.debug.print("Failed to spawn client handler: {}\n", .{err});
-        //};
+        _ = std.Thread.spawn(.{}, handleClient, .{&connection}) catch |err| {
+            std.debug.print("Failed to spawn client handler: {}\n", .{err});
+        };
     }
+}
+
+pub fn handleClient(conn: *std.net.Server.Connection) !void {
+    defer conn.stream.close();
+
+    var buf_read: [1024]u8 = undefined;
+    var buf_write: [1024]u8 = undefined;
+
+    var reader = std.net.Stream.reader(conn.stream, &buf_read); // .init()?
+    defer reader.deinit();
+
+    var writer = std.net.Stream.writer(conn.stream, &buf_write);
+    defer writer.deinit();
+
+    while (true) {
+        const n = try reader.readSliceAll(&reader, buf_read);
+
+        if (n == 0) break;
+        try writer.writeAll(buf_write[0..n]);
+    }
+}
+
+fn printAddress(addr: std.net.Address) !void {
+    var stdout_buffer: [1024]u8 = undefined;
+    var stdout_writer = std.fs.File.stdout().writer(&stdout_buffer);
+    const stdout = &stdout_writer.interface;
+
+    try addr.format(stdout);
 }

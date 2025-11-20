@@ -8,7 +8,7 @@ pub const Properties = struct {
 
     pub fn default() Properties {
         return Properties{
-            .host = "127.0.0.1",
+            .host = "0.0.0.0",
             .port = 25565,
             .protocol = .Tcp,
         };
