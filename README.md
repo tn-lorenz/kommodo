@@ -126,8 +126,6 @@ pause
 Linux
 ```bash
 #!/bin/bash
-# start.sh
-# Simple startup script for kommodo on Linux
 
 echo "Starting kommodo..."
 
