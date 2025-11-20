@@ -10,6 +10,11 @@ pub fn build(b: *std.Build) void {
         .target = target,
     });
 
+    const logex = b.dependency("logex", .{
+        .target = target,
+        .optimize = .Debug,
+    });
+
     const exe = b.addExecutable(.{
         .name = "kommodo",
         .root_module = b.createModule(.{
@@ -18,6 +23,10 @@ pub fn build(b: *std.Build) void {
             .optimize = .Debug,
             .imports = &.{
                 .{ .name = "kommodo", .module = mod },
+                .{
+                    .name = "logex",
+                    .module = logex.module("logex"),
+                },
             },
         }),
     });
