@@ -9,7 +9,7 @@ pub fn startServer(allocator: std.mem.Allocator, props: config.Properties, addr:
     const game_thread = try startGameLoop(allocator, running, update_fn);
     defer game_thread.join();
 
-    try net.openConnection(props.protocol, addr, props.port);
+    try net.openConnection(allocator, props.protocol, addr);
 }
 
 const ThreadCtx = struct {
@@ -62,24 +62,19 @@ pub fn initLog(prefix: []const u8) !void {
     try stdout.flush();
 }
 
-// TODO: Cmd starten und alles anzeigen
 pub fn initInput(allocator: std.mem.Allocator) !void {
-    _ = allocator;
-    // const stdin = std.fs.getStdIn().reader();
-    // var read_buffer: [256]u8 = undefined;
-    // var stdin_reader = stdin.reader(&read_buffer);
+    _ = try std.Thread.spawn(.{}, inputThread, .{allocator});
+}
 
-    // while (true) {
-    //     const line = try std.io.readUntilDelimiterOrEofAlloc(allocator, &stdin, '\n');
-    //     defer allocator.free(line);
-    //
-    //     if (line.len == 0) continue;
-    //
-    //     var args = std.mem.split(line, " ");
-    //     std.debug.print("Command: {s}\n", .{line});
-    //
-    //     if (args.next()) |first| {
-    //         std.debug.print("Command word: {s}\n", .{first});
-    //     }
-    // }
+fn inputThread(allocator: std.mem.Allocator) void {
+    const stdin = std.io.getStdIn();
+    var read_buffer: [256]u8 = undefined;
+    var reader = stdin.reader(&read_buffer);
+
+    while (true) {
+        const line = reader.readUntilDelimiterOrEofAlloc(allocator, '\n') catch continue;
+        defer allocator.free(line);
+
+        std.debug.print("Command: {s}\n", .{line});
+    }
 }

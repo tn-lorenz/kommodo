@@ -3,7 +3,7 @@ pub const config = @import("util/config.zig");
 pub const game = @import("util/game.zig");
 
 pub fn findOrCreateProperties(allocator: std.mem.Allocator) !config.Properties {
-    const path = "../properties.json";
+    const path = "properties.json";
     var props: config.Properties = undefined;
 
     const file = std.fs.cwd().openFile(path, .{}) catch null;
