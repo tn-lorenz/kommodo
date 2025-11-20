@@ -84,17 +84,14 @@ pub fn handleClient(conn: *std.net.Server.Connection) !void {
     var buf_read: [1024]u8 = undefined;
     var buf_write: [1024]u8 = undefined;
 
-    var reader = std.net.Stream.reader(conn.stream, &buf_read); // .init()?
-    defer reader.deinit();
-
     var writer = std.net.Stream.writer(conn.stream, &buf_write);
-    defer writer.deinit();
 
     while (true) {
-        const n = try reader.readSliceAll(&reader, buf_read);
+        // const n = try reader.interface().readSliceAll(&buf_read);
+        const n = try conn.stream.read(&buf_read);
 
         if (n == 0) break;
-        try writer.writeAll(buf_write[0..n]);
+        try writer.interface.writeAll(buf_write[0..n]);
     }
 }
 
