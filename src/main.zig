@@ -38,6 +38,6 @@ pub fn update() void {
     var stdout_writer = std.fs.File.stdout().writer(&stdout_buffer);
     const stdout = &stdout_writer.interface;
 
-    stdout.print("Hello, World!\n", .{}) catch {};
+    // stdout.print("Hello, World!\n", .{}) catch {};
     _ = stdout.flush() catch {};
 }
