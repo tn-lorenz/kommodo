@@ -33,20 +33,21 @@ pub fn startGameLoop(allocator: std.mem.Allocator, running: *std.atomic.Value(bo
 
 fn thread_function(ctx: *ThreadCtx) void {
     const running = ctx.running;
-
     const interval: i128 = 1_000_000_000 / 20;
-    var last = std.time.nanoTimestamp();
-    var delta: i128 = 0;
+
+    var next = std.time.nanoTimestamp() + interval;
 
     while (running.load(AtomicOrder.seq_cst)) {
-        const current = std.time.nanoTimestamp();
-        delta += @divTrunc(current - last, interval);
-        last = current;
+        const now = std.time.nanoTimestamp();
 
-        if (delta >= 1) {
-            if (ctx.update_fn) |f| f();
-            delta -= 1;
+        const remaining = next - now;
+
+        if (remaining > 0) {
+            std.Thread.sleep(@intCast(remaining));
         }
+        next += interval;
+
+        if (ctx.update_fn) |f| f();
     }
 
     ctx.allocator.destroy(ctx);
