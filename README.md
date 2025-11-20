@@ -65,11 +65,11 @@ in your directory of choice. And don't forget to set this repository as it's ups
 git remote add upstream https://github.com/tn-lorenz/kommodo.git
 ```
 in said directory. To test if it has succeeded, type
-```console
-$ git remote -v
+```gitattributes
+git remote -v
 ```
 which should yield the following.
-```bash
+```gitattributes
 origin   https://github.com/{your-name}/kommodo.git (fetch)
 origin   https://github.com/{your-name}/kommodo.git (push)
 upstream https://github.com/tn-lorenz/kommodo.git (fetch)
