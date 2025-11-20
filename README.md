@@ -16,6 +16,7 @@
    </p>
 
 Kommodo is an ECS-based Minecraft server, built in zig `0.15.2`.
+*Note that further work will be put into this, once the new `std.Io` interface stabilizes.*
 </div>
 
 ---
@@ -42,20 +43,20 @@ Kommodo is an ECS-based Minecraft server, built in zig `0.15.2`.
 > All the following steps require you to have a version of [git](https://git-scm.com/) and [zig 0.15.2](https://www.zvm.app/) running on your system.
 
 ## Identify
-...a feature you'd like to add or an issue to work on. You should always create an issue or a draft-pr describing what you want, before considering adding a major feature.
+... a feature you'd like to add or an issue to work on. You should always create an issue or a draft-pr describing what you want, before considering adding a major feature.
 
 ## Decompile
-...the latest version of Minecraft using Parchment mappings. The `main` branch currently targets Minecraft `1.21.10`.
+... the latest version of Minecraft using Parchment mappings. The `main` branch currently targets Minecraft `1.21.10`.
 
 Alternatively, you may use [GitCraft](https://github.com/WinPlay02/GitCraft) for this task.
 If you choose to use GitCraft, run the command 
 ```bash
 ./gradlew run --args="--mappings=mojmap_parchment --only-stable"
 ```
-in the GitCraft directory and keep in mind that you *may* have to implement this [change](https://github.com/WinPlay02/GitCraft/pull/29).
+in the GitCraft directory and keep in mind that you *may* have to implement this [change](https://github.com/WinPlay02/GitCraft/pull/29) beforehand.
 
 ## Fork
-...the `main` branch of this repository, so you can prepare your changes on there. Clone it to your system by running the command
+... the `main` branch of this repository, so you can prepare your changes on there. Clone it to your system by running the command
 ```gitattributes
 git clone https://github.com/{your-name}/kommodo
 ```
@@ -63,10 +64,12 @@ in your directory of choice. And don't forget to set this repository as it's ups
 ```gitattributes
 git remote add upstream https://github.com/tn-lorenz/kommodo.git
 ```
-in said directory. To test if it has succeeded, type and observer the following:
+in said directory. To test if it has succeeded, type
 ```console
 $ git remote -v
-
+```
+which should yield the following.
+```bash
 origin   https://github.com/{your-name}/kommodo.git (fetch)
 origin   https://github.com/{your-name}/kommodo.git (push)
 upstream https://github.com/tn-lorenz/kommodo.git (fetch)
@@ -79,16 +82,17 @@ git checkout -b feat-{feature-name}
 from the `main` branch.
 
 ## Examine
-...the vanilla Minecraft implementation. Translate it to idiomatic, ECS-compatible `zig 0.15.2` code, as cleanly and efficiently as possible.
+... the vanilla Minecraft implementation. Translate it to idiomatic, ECS-compatible `zig 0.15.2` code, as cleanly and efficiently as possible (SIMD would be goated!).
 When in doubt, consider if your code adheres to the [core-principles](#design-decisions) and [goals](#goals) of this project.
 
 ## Commit
-...your changes to your fork and open a pull-request by using the following commands in the directory of your fork.
+... your changes to your fork and use the following commands in its directory:
 ```gitattributes
 git add .
 git commit -m "{your-message}"
 git push origin {your-branch}
 ```
+Then you may open a pull-request by comparing on the github website.
 > [!NOTE]
 > This project strictly enforces the use of the [conventional commits standard](https://www.conventionalcommits.org/en/v1.0.0/) in the commit messages.
 ---
