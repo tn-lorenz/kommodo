@@ -39,7 +39,9 @@ pub fn main() !void {
     try server.start();
     defer server.stop();
 
-    std.log.info("Server is running...", .{});
+    while (!server.tcp_ready.load(.seq_cst)) {
+        std.Thread.sleep(10_000_000);
+    }
 }
 
 pub fn update() void {

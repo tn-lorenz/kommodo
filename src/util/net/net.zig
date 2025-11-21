@@ -10,18 +10,18 @@ pub const KommodoServer = struct {
     address: std.net.Address,
     props: config.Properties,
     running: std.atomic.Value(bool),
+    tcp_ready: std.atomic.Value(bool),
     game_thread: ?std.Thread,
     tcp_thread: ?std.Thread,
 
     pub fn new(allocator: std.mem.Allocator, props: config.Properties) !KommodoServer {
-        // TODO: besseres handling, wenn z.B. props nicht gefunden/lesbar/vollständig
         const addr = try std.net.Address.parseIp4(props.host, props.port);
-
         return KommodoServer{
             .allocator = allocator,
             .address = addr,
             .props = props,
-            .running = std.atomic.Value(bool).init(true), // false, da später eh überschrieben?
+            .running = std.atomic.Value(bool).init(false),
+            .tcp_ready = std.atomic.Value(bool).init(false),
             .game_thread = null,
             .tcp_thread = null,
         };
