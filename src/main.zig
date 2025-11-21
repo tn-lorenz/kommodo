@@ -40,18 +40,17 @@ pub fn main() !void {
     try server.start();
     defer server.stop();
 
-    while (!server.tcp_ready.load(.seq_cst)) {
-        std.Thread.sleep(10_000_000);
-    }
+    // while (!server.tcp_ready.load(.seq_cst)) { std.Thread.sleep(10_000_000); }
 
-    game.game_loop(server.ctx.?);
+    game.tick(server.ctx.?, update);
 }
 
 pub fn update() void {
-    std.log.info("update ticking!", .{});
+    // std.log.info("update ticking!", .{});
+    //const stdout_writer = std.io.getStdOut().writer();
     // var stdout_buffer: [1024]u8 = undefined;
-    // const stdout = &stdout_writer.interface;
+    //const stdout = &stdout_writer.interface;
 
-    // stdout.print("Hello, World!\n", .{}) catch {};
-    // _ = stdout.flush() catch {};
+    //stdout.print("Hello, World!\n", .{}) catch {};
+    //_ = stdout.flush() catch {};
 }

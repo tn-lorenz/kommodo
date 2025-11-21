@@ -8,7 +8,7 @@ const ThreadCtx = @import("../../root.zig").ThreadCtx;
 pub const KommodoServer = struct {
     allocator: std.mem.Allocator,
     address: std.net.Address,
-    props: config.Properties,
+    properties: config.Properties,
     running: std.atomic.Value(bool),
     tcp_ready: std.atomic.Value(bool),
     game_thread: ?std.Thread,
@@ -20,7 +20,7 @@ pub const KommodoServer = struct {
         return KommodoServer{
             .allocator = allocator,
             .address = addr,
-            .props = props,
+            .properties = props,
             .running = std.atomic.Value(bool).init(false),
             .tcp_ready = std.atomic.Value(bool).init(false),
             .game_thread = null,
@@ -37,11 +37,10 @@ pub const KommodoServer = struct {
             .running = &self.running,
             .allocator = self.allocator,
         };
+
         self.ctx = ctx;
 
-        // self.game_thread = try std.Thread.spawn(.{}, game.game_loop, .{ctx});
-
-        self.address = std.net.Address.parseIp4(self.props.host, self.props.port) catch |err| {
+        self.address = std.net.Address.parseIp4(self.properties.host, self.properties.port) catch |err| {
             std.log.err("Failed to parse address: {}", .{err});
             return;
         };
@@ -56,6 +55,7 @@ pub const KommodoServer = struct {
         };
     }
 
+    // TODO: Graceful shutdown
     pub fn stop(self: *KommodoServer) void {
         self.running.store(false, .seq_cst);
 
