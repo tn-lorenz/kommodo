@@ -33,7 +33,6 @@ pub const KommodoServer = struct {
         ctx.* = ThreadCtx{
             .running = &self.running,
             .allocator = self.allocator,
-            // .update_fn = undefined,
         };
 
         self.game_thread = try std.Thread.spawn(.{}, thread_fn, .{ctx});
@@ -49,11 +48,6 @@ pub const KommodoServer = struct {
         }
     }
 };
-
-//pub const ThreadCtx = struct {
-//running: *std.atomic.Value(bool),
-//allocator: std.mem.Allocator,
-//};
 
 pub const ConnectionProtocol = enum {
     Tcp,
@@ -80,13 +74,4 @@ pub fn openConnection(
         .Tcp => return tcp.startTcpServer(allocator, addr),
         else => return error.UnsupportedProtocol,
     }
-}
-
-fn printAddress(addr: std.net.Address) !void {
-    var stdout_buffer: [1024]u8 = undefined;
-    var stdout_writer = std.fs.File.stdout().writer(&stdout_buffer);
-    const stdout = &stdout_writer.interface;
-
-    try stdout.print("{f}", .{addr});
-    try stdout.flush();
 }

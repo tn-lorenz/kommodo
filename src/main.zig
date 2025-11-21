@@ -40,8 +40,6 @@ pub fn main() !void {
     var server = try KommodoServer.new(alloc, props);
     try server.start();
     defer server.stop();
-
-    //_ = try game.startServer(alloc, props, addr, &running, update);
 }
 
 pub fn update() void {

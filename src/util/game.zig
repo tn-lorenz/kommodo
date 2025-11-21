@@ -4,34 +4,6 @@ const net = @import("net/net.zig");
 const AtomicOrder = std.builtin.AtomicOrder;
 const ThreadCtx = @import("../root.zig").ThreadCtx;
 
-pub fn startServer(allocator: std.mem.Allocator, props: config.Properties, addr: std.net.Address, running: *std.atomic.Value(bool), update_fn: fn () void) !void {
-    const game_thread = try startGameLoop(allocator, running, update_fn);
-    defer game_thread.join();
-
-    // _ = try startGameLoop(allocator, running, update_fn);
-    try net.openConnection(allocator, props.protocol, addr);
-}
-
-// TODO: eliminieren
-//pub const ThreadCtx = struct {
-//running: *std.atomic.Value(bool),
-//update_fn: ?*const fn () void,
-//allocator: std.mem.Allocator,
-//};
-
-pub fn startGameLoop(allocator: std.mem.Allocator, running: *std.atomic.Value(bool), update_fn: fn () void) !std.Thread {
-    running.store(true, AtomicOrder.seq_cst);
-
-    const ctx = try allocator.create(ThreadCtx);
-    ctx.* = ThreadCtx{
-        .running = running,
-        .update_fn = &update_fn,
-        .allocator = allocator,
-    };
-
-    return try std.Thread.spawn(.{}, thread_function, .{ctx});
-}
-
 pub fn thread_function(ctx: *ThreadCtx) void {
     const running = ctx.running;
     const interval: i128 = 1_000_000_000 / 20;
@@ -55,31 +27,4 @@ pub fn thread_function(ctx: *ThreadCtx) void {
     }
 
     ctx.allocator.destroy(ctx);
-}
-
-pub fn initLog(prefix: []const u8) !void {
-    var stdout_buffer: [1024]u8 = undefined;
-    var stdout_writer: std.fs.File.Writer = std.fs.File.stdout().writer(&stdout_buffer);
-    const stdout: *std.Io.Writer = &stdout_writer.interface;
-
-    try stdout.print("{s} Initialised log.\n", .{prefix});
-
-    try stdout.flush();
-}
-
-pub fn initInput(allocator: std.mem.Allocator) !void {
-    _ = try std.Thread.spawn(.{}, inputThread, .{allocator});
-}
-
-fn inputThread(allocator: std.mem.Allocator) void {
-    const stdin = std.io.getStdIn();
-    var read_buffer: [256]u8 = undefined;
-    var reader = stdin.reader(&read_buffer);
-
-    while (true) {
-        const line = reader.readUntilDelimiterOrEofAlloc(allocator, '\n') catch continue;
-        defer allocator.free(line);
-
-        std.debug.print("Command: {s}\n", .{line});
-    }
 }
