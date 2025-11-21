@@ -117,7 +117,6 @@ Windows `start.bat`
 @echo off
 echo Starting kommodo...
 
-set RUST_BACKTRACE=full
 kommodo.exe
 
 pause
@@ -127,7 +126,6 @@ Linux `start.sh`
 ```bash
 echo "Starting kommodo..."
 
-export RUST_BACKTRACE=full
 ./kommodo
 
 read
