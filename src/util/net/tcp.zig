@@ -10,7 +10,12 @@ const TcpListener = struct {
     }
 };
 
-pub fn startTcpServer(server: *KommodoServer) !void {
+pub fn startTcpServer(
+    server: *KommodoServer,
+) !void {
+    server.address = try std.net.Address.parseIp4(server.props.host, server.props.port);
+    server.running.store(true, .seq_cst);
+
     _ = try std.Thread.spawn(.{}, tcpServerThread, .{server});
 }
 
@@ -26,6 +31,8 @@ fn tcpServerThread(server: *KommodoServer) !void {
         return;
     };
     defer listener.deinit();
+
+    std.log.info("Server listening on {f}\n", .{server.address});
 
     while (server.running.load(.seq_cst)) {
         const conn = listener.accept() catch |err| {

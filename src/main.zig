@@ -4,7 +4,6 @@ const logex = @import("logex");
 const lib = @import("root.zig");
 const KommodoServer = @import("util/net/net.zig").KommodoServer;
 
-// Logging
 const ConsoleAppender = logex.appenders.Console(.debug, .{});
 const FileAppender = logex.appenders.File(.info, .{
     .format = .json,
@@ -24,17 +23,13 @@ pub fn main() !void {
 
     // Logging
     const cwd = std.fs.cwd();
-    const log_dir_path = "logs";
-
-    _ = cwd.makeDir(log_dir_path) catch |err| {
-        if (err != error.PathAlreadyExists) return err;
-    };
+    _ = cwd.makeDir("logs") catch |err| if (err != error.PathAlreadyExists) return err;
 
     const console_appender = ConsoleAppender.init;
     const file_appender = try FileAppender.init("logs/kommodo.log");
     try Logger.init(.{}, .{ console_appender, file_appender });
 
-    std.log.info("Logger initialised", .{});
+    std.log.info("Logger initialised...", .{});
 
     // Server
     var props = try lib.findOrCreateProperties(alloc);
@@ -43,6 +38,8 @@ pub fn main() !void {
     var server = try KommodoServer.new(alloc, props);
     try server.start();
     defer server.stop();
+
+    std.log.info("Server is running...", .{});
 }
 
 pub fn update() void {

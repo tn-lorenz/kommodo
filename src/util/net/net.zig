@@ -11,6 +11,7 @@ pub const KommodoServer = struct {
     props: config.Properties,
     running: std.atomic.Value(bool),
     game_thread: ?std.Thread,
+    tcp_thread: ?std.Thread,
 
     pub fn new(allocator: std.mem.Allocator, props: config.Properties) !KommodoServer {
         // TODO: besseres handling, wenn z.B. props nicht gefunden/lesbar/vollständig
@@ -22,6 +23,7 @@ pub const KommodoServer = struct {
             .props = props,
             .running = std.atomic.Value(bool).init(true), // false, da später eh überschrieben?
             .game_thread = null,
+            .tcp_thread = null,
         };
     }
 
@@ -29,22 +31,27 @@ pub const KommodoServer = struct {
         self.running.store(true, .seq_cst);
 
         const ctx = try self.allocator.create(ThreadCtx);
-
         ctx.* = ThreadCtx{
             .running = &self.running,
             .allocator = self.allocator,
         };
 
         self.game_thread = try std.Thread.spawn(.{}, game.game_loop, .{ctx});
-
-        try openConnection(self.props.protocol, self);
+        self.tcp_thread = try std.Thread.spawn(.{}, tcp.startTcpServer, .{self});
+        // try openConnection(self.props.protocol, self);
     }
 
     pub fn stop(self: *KommodoServer) void {
         self.running.store(false, .seq_cst);
-        if (self.game_thread) |thread| {
-            thread.join();
+
+        if (self.game_thread) |t| {
+            t.join();
             self.game_thread = null;
+        }
+
+        if (self.tcp_thread) |t| {
+            t.join();
+            self.tcp_thread = null;
         }
     }
 };
