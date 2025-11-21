@@ -1,22 +1,23 @@
 const std = @import("std");
 const config = @import("config.zig");
-const net = @import("net.zig");
+const net = @import("net/net.zig");
 const AtomicOrder = std.builtin.AtomicOrder;
+const ThreadCtx = @import("../root.zig").ThreadCtx;
 
 pub fn startServer(allocator: std.mem.Allocator, props: config.Properties, addr: std.net.Address, running: *std.atomic.Value(bool), update_fn: fn () void) !void {
-    // try initLog("[kommodo]:");
-
     const game_thread = try startGameLoop(allocator, running, update_fn);
     defer game_thread.join();
 
+    // _ = try startGameLoop(allocator, running, update_fn);
     try net.openConnection(allocator, props.protocol, addr);
 }
 
-const ThreadCtx = struct {
-    running: *std.atomic.Value(bool),
-    update_fn: ?*const fn () void,
-    allocator: std.mem.Allocator,
-};
+// TODO: eliminieren
+//pub const ThreadCtx = struct {
+//running: *std.atomic.Value(bool),
+//update_fn: ?*const fn () void,
+//allocator: std.mem.Allocator,
+//};
 
 pub fn startGameLoop(allocator: std.mem.Allocator, running: *std.atomic.Value(bool), update_fn: fn () void) !std.Thread {
     running.store(true, AtomicOrder.seq_cst);
@@ -31,7 +32,7 @@ pub fn startGameLoop(allocator: std.mem.Allocator, running: *std.atomic.Value(bo
     return try std.Thread.spawn(.{}, thread_function, .{ctx});
 }
 
-fn thread_function(ctx: *ThreadCtx) void {
+pub fn thread_function(ctx: *ThreadCtx) void {
     const running = ctx.running;
     const interval: i128 = 1_000_000_000 / 20;
 
@@ -50,7 +51,7 @@ fn thread_function(ctx: *ThreadCtx) void {
 
         next += interval;
 
-        if (ctx.update_fn) |f| f();
+        // if (ctx.update_fn) |f| f(); only if update logic can differ or some shit
     }
 
     ctx.allocator.destroy(ctx);

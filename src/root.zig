@@ -17,3 +17,9 @@ pub fn findOrCreateProperties(allocator: std.mem.Allocator) !config.Properties {
 
     return props;
 }
+
+pub const ThreadCtx = struct {
+    running: *std.atomic.Value(bool),
+    allocator: std.mem.Allocator,
+    // update_fn: ?*const fn () void,
+};

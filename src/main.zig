@@ -3,6 +3,7 @@ const std = @import("std");
 const logex = @import("logex");
 const kom = @import("root.zig");
 const game = kom.game;
+const KommodoServer = @import("util/net/net.zig").KommodoServer;
 
 var running: std.atomic.Value(bool) = .init(false);
 
@@ -36,9 +37,13 @@ pub fn main() !void {
 
     // Server
     const props = try kom.findOrCreateProperties(alloc);
-    const addr = try std.net.Address.parseIp4(props.host, props.port);
+    // TODO: eig braucht server kein addr übergeben zu bekommen, denn es ist ja in props enthalten
 
-    _ = try game.startServer(alloc, props, addr, &running, update);
+    var server = try KommodoServer.new(alloc, props);
+    try server.start();
+    defer server.stop();
+
+    //_ = try game.startServer(alloc, props, addr, &running, update);
 }
 
 pub fn update() void {

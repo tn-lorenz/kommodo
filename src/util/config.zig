@@ -1,5 +1,5 @@
 const std = @import("std");
-const net = @import("net.zig");
+const net = @import("net/net.zig");
 
 pub const Properties = struct {
     host: []const u8,
