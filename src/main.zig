@@ -34,12 +34,6 @@ pub fn main() !void {
 
     std.log.info("Logger initialised", .{});
 
-    // Arg parsing
-    const args = try std.process.argsAlloc(alloc);
-
-    var parser = std.build.ArgParser.init(args[0..]);
-    defer parser.deinit();
-
     // Server
     const props = try kom.findOrCreateProperties(alloc);
     const addr = try std.net.Address.parseIp4(props.host, props.port);
