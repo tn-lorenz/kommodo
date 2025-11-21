@@ -2,7 +2,7 @@ const std = @import("std");
 const tcp = @import("tcp.zig");
 const config = @import("../config.zig");
 const AtomicOrder = std.builtin.AtomicOrder;
-const thread_fn = @import("../game.zig").thread_function;
+const game = @import("../game.zig");
 const ThreadCtx = @import("../../root.zig").ThreadCtx;
 
 pub const KommodoServer = struct {
@@ -35,7 +35,7 @@ pub const KommodoServer = struct {
             .allocator = self.allocator,
         };
 
-        self.game_thread = try std.Thread.spawn(.{}, thread_fn, .{ctx});
+        self.game_thread = try std.Thread.spawn(.{}, game.game_loop, .{ctx});
 
         try openConnection(self.allocator, self.props.protocol, self);
     }

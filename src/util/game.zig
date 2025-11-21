@@ -4,8 +4,8 @@ const net = @import("net/net.zig");
 const AtomicOrder = std.builtin.AtomicOrder;
 const ThreadCtx = @import("../root.zig").ThreadCtx;
 
-pub fn thread_function(ctx: *ThreadCtx) void {
-    const running = ctx.running;
+pub fn game_loop(server_ctx: *ThreadCtx) void {
+    const running = server_ctx.running;
     const interval: i128 = 1_000_000_000 / 20;
 
     var next = std.time.nanoTimestamp() + interval;
@@ -23,8 +23,8 @@ pub fn thread_function(ctx: *ThreadCtx) void {
 
         next += interval;
 
-        // if (ctx.update_fn) |f| f(); only if update logic can differ or some shit
+        // if (server_ctx.update_fn) |f| f(); only if update logic can differ or some shit
     }
 
-    ctx.allocator.destroy(ctx);
+    server_ctx.allocator.destroy(server_ctx);
 }

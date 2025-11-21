@@ -1,11 +1,8 @@
 //! This is the main file of this project, where the game-loop, server and terminal are initialised.
 const std = @import("std");
 const logex = @import("logex");
-const kom = @import("root.zig");
-const game = kom.game;
+const lib = @import("root.zig");
 const KommodoServer = @import("util/net/net.zig").KommodoServer;
-
-var running: std.atomic.Value(bool) = .init(false);
 
 // Logging
 const ConsoleAppender = logex.appenders.Console(.debug, .{});
@@ -36,7 +33,7 @@ pub fn main() !void {
     std.log.info("Logger initialised", .{});
 
     // Server
-    const props = try kom.findOrCreateProperties(alloc);
+    const props = try lib.findOrCreateProperties(alloc);
     var server = try KommodoServer.new(alloc, props);
     try server.start();
     defer server.stop();
