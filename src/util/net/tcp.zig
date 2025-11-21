@@ -1,5 +1,6 @@
 const std = @import("std");
 const KommodoServer = @import("net.zig").KommodoServer;
+const config = @import("../config.zig");
 
 const TcpListener = struct {
     listener: std.net.TcpListener,
@@ -9,24 +10,23 @@ const TcpListener = struct {
     }
 };
 
-// TODO: vielleicht übernimmt später `KommodoServer` das hier
-//const ThreadCtx = struct {
-//allocator: std.mem.Allocator,
-//addr: std.net.Address,
-//};
-
 pub fn startTcpServer(
     allocator: std.mem.Allocator,
-    address: std.net.Address,
+    server: *KommodoServer,
 ) !void {
     const ctx_ptr = try allocator.create(KommodoServer);
+
+    // TODO: besseres handling, wenn z.B. props nicht gefunden/lesbar/vollständig
+    const addr = try std.net.Address.parseIp4(server.props.host, server.props.port);
+
     ctx_ptr.* = KommodoServer{
         .allocator = allocator,
-        .address = address,
+        .address = addr,
+        .props = server.props,
         .running = std.atomic.Value(bool).init(true),
-        .props = undefined,
-        .game_thread = undefined,
+        .game_thread = null,
     };
+
     _ = try std.Thread.spawn(.{}, tcpServerThread, .{ctx_ptr});
 }
 
