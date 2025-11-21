@@ -19,25 +19,32 @@ pub const std_options: std.Options = .{
 };
 
 pub fn main() !void {
+    // Allocator
     var gpa = std.heap.DebugAllocator(.{}){};
     defer _ = gpa.deinit();
     const alloc = gpa.allocator();
 
+    // Logging
     const cwd = std.fs.cwd();
-
     _ = try cwd.makeDir("logs");
 
     const console_appender = ConsoleAppender.init;
     const file_appender = try FileAppender.init("logs/kommodo.log");
     try Logger.init(.{}, .{ console_appender, file_appender });
 
-    std.log.debug("Debug message", .{});
-    std.log.info("Info message", .{});
+    std.log.info("Logger initialised", .{});
 
+    // Arg parsing
+    const args = try std.process.argsAlloc(alloc);
+
+    var parser = std.build.ArgParser.init(args[0..]);
+    defer parser.deinit();
+
+    // Server
     const props = try kom.findOrCreateProperties(alloc);
     const addr = try std.net.Address.parseIp4(props.host, props.port);
 
-    try game.startServer(alloc, props, addr, &running, update); // maybe pass logger
+    _ = try game.startServer(alloc, props, addr, &running, update);
 }
 
 pub fn update() void {
