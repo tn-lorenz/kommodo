@@ -32,7 +32,6 @@ pub fn startTcpServer(
 
 fn tcpServerThread(ctx_ptr: *KommodoServer) !void {
     const ctx = ctx_ptr.*;
-    defer ctx.allocator.destroy(ctx_ptr);
 
     const listen_options = std.net.Address.ListenOptions{
         .reuse_address = true,
@@ -40,39 +39,39 @@ fn tcpServerThread(ctx_ptr: *KommodoServer) !void {
         .force_nonblocking = false,
     };
 
-    var server = ctx.address.listen(listen_options) catch |err| {
-        std.log.warn("Failed to listen on {f}: ", .{ctx.address});
-        std.log.err("{}\n", .{err});
+    var listener = ctx.address.listen(listen_options) catch |err| {
+        std.log.err("Failed to listen on {f}: {}\n", .{ ctx.address, err });
         return;
     };
-    defer {
-        server.deinit();
-    }
+    defer listener.deinit();
 
-    std.log.info("Server listening on {f}\n", .{ctx.address});
-
-    while (true) {
-        var connection = server.accept() catch |err| {
+    while (ctx.running.load(.seq_cst)) {
+        const conn = listener.accept() catch |err| {
             std.log.err("Accept error: {}\n", .{err});
             continue;
         };
-        _ = std.Thread.spawn(.{}, handleClient, .{&connection}) catch |err| {
+
+        const conn_ptr = try ctx.allocator.create(std.net.Server.Connection);
+        conn_ptr.* = conn;
+
+        _ = std.Thread.spawn(.{}, handleClient, .{ conn_ptr, ctx.allocator }) catch |err| {
             std.log.err("Failed to spawn client handler: {}\n", .{err});
+            ctx.allocator.destroy(conn_ptr);
         };
     }
 }
 
-pub fn handleClient(conn: *std.net.Server.Connection) !void {
-    defer conn.stream.close();
+pub fn handleClient(conn_ptr: *std.net.Server.Connection, allocator: std.mem.Allocator) !void {
+    defer conn_ptr.stream.close();
+    defer allocator.destroy(conn_ptr);
 
     var buf_read: [1024]u8 = undefined;
     var buf_write: [1024]u8 = undefined;
 
-    var writer = std.net.Stream.writer(conn.stream, &buf_write);
+    var writer = std.net.Stream.writer(conn_ptr.stream, &buf_write);
 
     while (true) {
-        const n = try conn.stream.read(&buf_read);
-
+        const n = try conn_ptr.stream.read(&buf_read);
         if (n == 0) break;
         try writer.interface.writeAll(buf_write[0..n]);
     }
