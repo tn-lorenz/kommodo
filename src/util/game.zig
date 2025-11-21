@@ -5,6 +5,8 @@ const AtomicOrder = std.builtin.AtomicOrder;
 const ThreadCtx = @import("../root.zig").ThreadCtx;
 
 pub fn game_loop(server_ctx: *ThreadCtx) void {
+    defer server_ctx.allocator.destroy(server_ctx);
+
     const running = server_ctx.running;
     const interval: i128 = 1_000_000_000 / 20;
 
@@ -25,6 +27,4 @@ pub fn game_loop(server_ctx: *ThreadCtx) void {
 
         // if (server_ctx.update_fn) |f| f(); only if update logic can differ or some shit
     }
-
-    server_ctx.allocator.destroy(server_ctx);
 }

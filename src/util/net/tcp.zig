@@ -10,53 +10,35 @@ const TcpListener = struct {
     }
 };
 
-pub fn startTcpServer(
-    allocator: std.mem.Allocator,
-    server: *KommodoServer,
-) !void {
-    const ctx_ptr = try allocator.create(KommodoServer);
-
-    // TODO: besseres handling, wenn z.B. props nicht gefunden/lesbar/vollständig
-    const addr = try std.net.Address.parseIp4(server.props.host, server.props.port);
-
-    ctx_ptr.* = KommodoServer{
-        .allocator = allocator,
-        .address = addr,
-        .props = server.props,
-        .running = std.atomic.Value(bool).init(true),
-        .game_thread = null,
-    };
-
-    _ = try std.Thread.spawn(.{}, tcpServerThread, .{ctx_ptr});
+pub fn startTcpServer(server: *KommodoServer) !void {
+    _ = try std.Thread.spawn(.{}, tcpServerThread, .{server});
 }
 
-fn tcpServerThread(ctx_ptr: *KommodoServer) !void {
-    const ctx = ctx_ptr.*;
-
+fn tcpServerThread(server: *KommodoServer) !void {
     const listen_options = std.net.Address.ListenOptions{
         .reuse_address = true,
         .kernel_backlog = 128,
         .force_nonblocking = false,
     };
 
-    var listener = ctx.address.listen(listen_options) catch |err| {
-        std.log.err("Failed to listen on {f}: {}\n", .{ ctx.address, err });
+    var listener = server.address.listen(listen_options) catch |err| {
+        std.log.err("Failed to listen on {f}: {}\n", .{ server.address, err });
         return;
     };
     defer listener.deinit();
 
-    while (ctx.running.load(.seq_cst)) {
+    while (server.running.load(.seq_cst)) {
         const conn = listener.accept() catch |err| {
             std.log.err("Accept error: {}\n", .{err});
             continue;
         };
 
-        const conn_ptr = try ctx.allocator.create(std.net.Server.Connection);
+        const conn_ptr = try server.allocator.create(std.net.Server.Connection);
         conn_ptr.* = conn;
 
-        _ = std.Thread.spawn(.{}, handleClient, .{ conn_ptr, ctx.allocator }) catch |err| {
+        _ = std.Thread.spawn(.{}, handleClient, .{ conn_ptr, server.allocator }) catch |err| {
             std.log.err("Failed to spawn client handler: {}\n", .{err});
-            ctx.allocator.destroy(conn_ptr);
+            server.allocator.destroy(conn_ptr);
         };
     }
 }

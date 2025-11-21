@@ -24,7 +24,11 @@ pub fn main() !void {
 
     // Logging
     const cwd = std.fs.cwd();
-    _ = try cwd.makeDir("logs");
+    const log_dir_path = "logs";
+
+    _ = cwd.makeDir(log_dir_path) catch |err| {
+        if (err != error.PathAlreadyExists) return err;
+    };
 
     const console_appender = ConsoleAppender.init;
     const file_appender = try FileAppender.init("logs/kommodo.log");
@@ -33,7 +37,9 @@ pub fn main() !void {
     std.log.info("Logger initialised", .{});
 
     // Server
-    const props = try lib.findOrCreateProperties(alloc);
+    var props = try lib.findOrCreateProperties(alloc);
+    defer props.deinit(alloc);
+
     var server = try KommodoServer.new(alloc, props);
     try server.start();
     defer server.stop();

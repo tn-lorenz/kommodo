@@ -37,7 +37,7 @@ pub const KommodoServer = struct {
 
         self.game_thread = try std.Thread.spawn(.{}, game.game_loop, .{ctx});
 
-        try openConnection(self.allocator, self.props.protocol, self);
+        try openConnection(self.props.protocol, self);
     }
 
     pub fn stop(self: *KommodoServer) void {
@@ -66,12 +66,11 @@ pub const ConnectionProtocol = enum {
 };
 
 pub fn openConnection(
-    allocator: std.mem.Allocator,
     cp: ConnectionProtocol,
     server: *KommodoServer,
 ) !void {
     switch (cp) {
-        .Tcp => return tcp.startTcpServer(allocator, server),
+        .Tcp => return tcp.startTcpServer(server),
         else => return error.UnsupportedProtocol,
     }
 }

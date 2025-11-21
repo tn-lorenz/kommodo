@@ -48,4 +48,8 @@ pub const Properties = struct {
 
         try file.writeAll(json_text);
     }
+
+    pub fn deinit(self: *Properties, allocator: std.mem.Allocator) void {
+        allocator.free(self.host);
+    }
 };
