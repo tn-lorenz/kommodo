@@ -55,7 +55,8 @@ fn tcpServerThread(ctx_ptr: *ThreadCtx) !void {
     };
 
     var server = ctx.addr.listen(listen_options) catch |err| {
-        std.debug.print("Failed to listen on {any}: {}\n", .{ ctx.addr, err });
+        std.log.warn("Failed to listen on {f}: ", .{ctx.addr});
+        std.log.err("{}\n", .{err});
         return;
     };
     defer {
@@ -63,16 +64,16 @@ fn tcpServerThread(ctx_ptr: *ThreadCtx) !void {
         server.deinit();
     }
 
-    std.debug.print("Server listening on {f}\n", .{ctx.addr});
+    std.log.info("Server listening on {f}\n", .{ctx.addr});
     // try printAddress(ctx.addr);
 
     while (true) {
         var connection = server.accept() catch |err| {
-            std.debug.print("Accept error: {}\n", .{err});
+            std.log.err("Accept error: {}\n", .{err});
             continue;
         };
         _ = std.Thread.spawn(.{}, handleClient, .{&connection}) catch |err| {
-            std.debug.print("Failed to spawn client handler: {}\n", .{err});
+            std.log.err("Failed to spawn client handler: {}\n", .{err});
         };
     }
 }

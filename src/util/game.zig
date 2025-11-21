@@ -4,7 +4,7 @@ const net = @import("net.zig");
 const AtomicOrder = std.builtin.AtomicOrder;
 
 pub fn startServer(allocator: std.mem.Allocator, props: config.Properties, addr: std.net.Address, running: *std.atomic.Value(bool), update_fn: fn () void) !void {
-    try initLog("[kommodo]:");
+    // try initLog("[kommodo]:");
 
     const game_thread = try startGameLoop(allocator, running, update_fn);
     defer game_thread.join();
