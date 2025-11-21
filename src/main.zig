@@ -37,8 +37,6 @@ pub fn main() !void {
 
     // Server
     const props = try kom.findOrCreateProperties(alloc);
-    // TODO: eig braucht server kein addr übergeben zu bekommen, denn es ist ja in props enthalten
-
     var server = try KommodoServer.new(alloc, props);
     try server.start();
     defer server.stop();
