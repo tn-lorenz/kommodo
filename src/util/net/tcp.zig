@@ -2,24 +2,7 @@ const std = @import("std");
 const KommodoServer = @import("net.zig").KommodoServer;
 const config = @import("../config.zig");
 
-const TcpListener = struct {
-    listener: std.net.TcpListener,
-
-    pub fn accept(self: *TcpListener, allocator: std.mem.Allocator) !std.net.TcpStream {
-        return try self.listener.accept(allocator);
-    }
-};
-
-pub fn startTcpServer(
-    server: *KommodoServer,
-) !void {
-    server.address = try std.net.Address.parseIp4(server.props.host, server.props.port);
-    server.running.store(true, .seq_cst);
-
-    _ = try std.Thread.spawn(.{}, tcpServerThread, .{server});
-}
-
-fn tcpServerThread(server: *KommodoServer) !void {
+pub fn tcpServerThread(server: *KommodoServer) void {
     const listen_options = std.net.Address.ListenOptions{
         .reuse_address = true,
         .kernel_backlog = 128,
@@ -32,7 +15,8 @@ fn tcpServerThread(server: *KommodoServer) !void {
     };
     defer listener.deinit();
 
-    std.log.info("Server listening on {f}\n", .{server.address});
+    server.tcp_ready.store(true, .seq_cst);
+    std.log.info("Server listening on {f}", .{server.address});
 
     while (server.running.load(.seq_cst)) {
         const conn = listener.accept() catch |err| {
@@ -40,7 +24,10 @@ fn tcpServerThread(server: *KommodoServer) !void {
             continue;
         };
 
-        const conn_ptr = try server.allocator.create(std.net.Server.Connection);
+        const conn_ptr = server.allocator.create(std.net.Server.Connection) catch |err| {
+            std.log.err("Failed to allocate connection: {}", .{err});
+            continue;
+        };
         conn_ptr.* = conn;
 
         _ = std.Thread.spawn(.{}, handleClient, .{ conn_ptr, server.allocator }) catch |err| {

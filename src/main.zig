@@ -45,6 +45,7 @@ pub fn main() !void {
 }
 
 pub fn update() void {
+    std.log.info("update ticking!", .{});
     // var stdout_buffer: [1024]u8 = undefined;
     // const stdout = &stdout_writer.interface;
 

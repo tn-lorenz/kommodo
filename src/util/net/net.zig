@@ -37,8 +37,20 @@ pub const KommodoServer = struct {
         };
 
         self.game_thread = try std.Thread.spawn(.{}, game.game_loop, .{ctx});
-        self.tcp_thread = try std.Thread.spawn(.{}, tcp.startTcpServer, .{self});
-        // try openConnection(self.props.protocol, self);
+
+        self.address = std.net.Address.parseIp4(self.props.host, self.props.port) catch |err| {
+            std.log.err("Failed to parse address: {}", .{err});
+            return;
+        };
+
+        self.running.store(true, .seq_cst);
+
+        // TcpThread
+        _ = std.Thread.spawn(.{}, tcp.tcpServerThread, .{self}) catch |err| {
+            std.log.err("Failed to spawn tcp listener thread: {}", .{err});
+            self.running.store(false, .seq_cst);
+            return;
+        };
     }
 
     pub fn stop(self: *KommodoServer) void {
