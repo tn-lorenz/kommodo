@@ -3,6 +3,7 @@ const std = @import("std");
 const logex = @import("logex");
 const lib = @import("root.zig");
 const KommodoServer = @import("util/net/net.zig").KommodoServer;
+const game = @import("util/game.zig");
 
 const ConsoleAppender = logex.appenders.Console(.debug, .{});
 const FileAppender = logex.appenders.File(.info, .{
@@ -42,6 +43,8 @@ pub fn main() !void {
     while (!server.tcp_ready.load(.seq_cst)) {
         std.Thread.sleep(10_000_000);
     }
+
+    game.game_loop(server.ctx.?);
 }
 
 pub fn update() void {

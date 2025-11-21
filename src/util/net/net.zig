@@ -13,6 +13,7 @@ pub const KommodoServer = struct {
     tcp_ready: std.atomic.Value(bool),
     game_thread: ?std.Thread,
     tcp_thread: ?std.Thread,
+    ctx: ?*ThreadCtx,
 
     pub fn new(allocator: std.mem.Allocator, props: config.Properties) !KommodoServer {
         const addr = try std.net.Address.parseIp4(props.host, props.port);
@@ -24,6 +25,7 @@ pub const KommodoServer = struct {
             .tcp_ready = std.atomic.Value(bool).init(false),
             .game_thread = null,
             .tcp_thread = null,
+            .ctx = null,
         };
     }
 
@@ -35,8 +37,9 @@ pub const KommodoServer = struct {
             .running = &self.running,
             .allocator = self.allocator,
         };
+        self.ctx = ctx;
 
-        self.game_thread = try std.Thread.spawn(.{}, game.game_loop, .{ctx});
+        // self.game_thread = try std.Thread.spawn(.{}, game.game_loop, .{ctx});
 
         self.address = std.net.Address.parseIp4(self.props.host, self.props.port) catch |err| {
             std.log.err("Failed to parse address: {}", .{err});
