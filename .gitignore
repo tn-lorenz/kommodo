@@ -1,6 +1,7 @@
 # Zig build artifacts
 .zig-cache/
-zig-out/bin
+#zig-out/bin
+zig-out
 /release/
 /debug/
 /build/
