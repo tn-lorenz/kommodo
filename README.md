@@ -112,7 +112,7 @@ This will compile the binary to `..\kommodo\zig-out\bin` from where it can be co
 ## Make a start script
 in the same directory as the compiled binary and run it. The following are some examples for different operating systems.  
 
-Windows
+Windows `start.bat`
 ```bash
 @echo off
 echo Starting kommodo...
@@ -123,10 +123,8 @@ kommodo.exe
 pause
 ```
 
-Linux
+Linux `start.sh`
 ```bash
-#!/bin/bash
-
 echo "Starting kommodo..."
 
 export RUST_BACKTRACE=full
