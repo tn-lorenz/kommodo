@@ -44,18 +44,12 @@ pub fn handleClient(conn_ptr: *std.net.Server.Connection, allocator: std.mem.All
     var buf_read: [1024]u8 = undefined;
     var buf_write: [1024]u8 = undefined;
 
-    // var reader = std.net.Stream.reader(conn_ptr.stream, &buf_read);
     var writer = std.net.Stream.writer(conn_ptr.stream, &buf_write);
 
-    // const r = reader.interface();
-    // const w = writer.interface;
-
     while (true) {
-        // const chunk = try r.readAtLeast(1);
-        // try w.writeAll(chunk);
         const n = try conn_ptr.stream.read(&buf_read);
         if (n == 0) break;
-        // try writer.interface.writeAll(buf_write[0..n]);
+
         try writer.interface.writeAll(buf_read[0..n]);
     }
 }

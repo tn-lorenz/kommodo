@@ -4,8 +4,6 @@ const ThreadCtx = @import("../root.zig").ThreadCtx;
 
 pub fn tick(ctx: *ThreadCtx, foo: ?fn () void) void {
     const interval_ns: u64 = 1_000_000_000 / 20;
-    // defer ctx.allocator.destroy(ctx);
-
     var next = std.time.nanoTimestamp() + interval_ns;
 
     while (ctx.running.load(.acquire)) {
