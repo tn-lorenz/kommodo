@@ -34,7 +34,6 @@ pub fn main() !void {
 
     // Server
     const props = try lib.findOrCreateProperties(alloc);
-    // defer props.deinit(alloc);
 
     var server = try KommodoServer.new(alloc, props);
     try server.start();
