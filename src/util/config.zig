@@ -14,6 +14,7 @@ pub const Properties = struct {
         };
     }
 
+    // `parsed.deinit();` must be called inside the caller of `load()`
     pub fn load(path: []const u8, allocator: std.mem.Allocator) !Properties {
         const file = try std.fs.cwd().openFile(path, .{});
         defer file.close();
@@ -24,12 +25,12 @@ pub const Properties = struct {
         defer json_reader.deinit();
 
         const parsed = try std.json.parseFromTokenSource(Properties, allocator, &json_reader, .{});
-        defer parsed.deinit();
+        // defer parsed.deinit();
 
-        const host_copy = try allocator.dupe(u8, parsed.value.host);
+        // const host_copy = try allocator.dupe(u8, parsed.value.host);
 
         return Properties{
-            .host = host_copy,
+            .host = parsed.value.host,
             .port = parsed.value.port,
             .protocol = parsed.value.protocol,
         };

@@ -7,6 +7,8 @@ zig-out
 /build/
 /build-*/
 /docgen_tmp/
+properties.json
+/logs/
 
 # Build output from IDEs or editors
 *.exe

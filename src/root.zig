@@ -10,6 +10,7 @@ pub fn findOrCreateProperties(allocator: std.mem.Allocator) !config.Properties {
     if (file) |f| {
         defer f.close();
         props = try config.Properties.load(path, allocator);
+        defer props.deinit(allocator);
     } else {
         props = config.Properties.default();
         try config.Properties.save(path, allocator, props);
