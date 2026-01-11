@@ -2,15 +2,26 @@ const std = @import("std");
 const net = @import("net/net.zig");
 
 pub const Properties = struct {
-    host: []const u8,
+    host: []u8,
     port: u16,
     protocol: net.ConnectionProtocol,
 
-    pub fn default() Properties {
+    pub fn default(allocator: std.mem.Allocator) !Properties {
         return Properties{
-            .host = "0.0.0.0",
+            .host = try allocator.dupe(u8, "0.0.0.0"), // "0.0.0.0"
             .port = 25565,
             .protocol = .Tcp,
+        };
+    }
+
+    pub fn dupe(props: Properties, allocator: std.mem.Allocator) !Properties {
+        const duped_host = try allocator.dupe(u8, props.host);
+        errdefer comptime unreachable;
+
+        return .{
+            .host = duped_host,
+            .port = props.port,
+            .protocol = props.protocol,
         };
     }
 
@@ -25,12 +36,12 @@ pub const Properties = struct {
         defer json_reader.deinit();
 
         const parsed = try std.json.parseFromTokenSource(Properties, allocator, &json_reader, .{});
-        // defer parsed.deinit();
+        defer parsed.deinit();
 
         // const host_copy = try allocator.dupe(u8, parsed.value.host);
 
         return Properties{
-            .host = parsed.value.host,
+            .host = try allocator.dupe(u8, parsed.value.host), // parsed.value.host
             .port = parsed.value.port,
             .protocol = parsed.value.protocol,
         };

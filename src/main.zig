@@ -33,8 +33,8 @@ pub fn main() !void {
     std.log.info("Logger initialised...", .{});
 
     // Server
-    var props = try lib.findOrCreateProperties(alloc);
-    defer props.deinit(alloc);
+    const props = try lib.findOrCreateProperties(alloc);
+    // defer props.deinit(alloc);
 
     var server = try KommodoServer.new(alloc, props);
     try server.start();

@@ -4,19 +4,18 @@ pub const game = @import("util/game.zig");
 
 pub fn findOrCreateProperties(allocator: std.mem.Allocator) !config.Properties {
     const path = "properties.json";
-    var props: config.Properties = undefined;
+    // var props: config.Properties = undefined;
 
     const file = std.fs.cwd().openFile(path, .{}) catch null;
     if (file) |f| {
         defer f.close();
-        props = try config.Properties.load(path, allocator);
-        defer props.deinit(allocator);
+        return try config.Properties.load(path, allocator);
+        // defer props.deinit(allocator);
     } else {
-        props = config.Properties.default();
+        const props = try config.Properties.default(allocator);
         try config.Properties.save(path, allocator, props);
+        return props;
     }
-
-    return props;
 }
 
 pub const ThreadCtx = struct {
